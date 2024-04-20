@@ -1,0 +1,9 @@
+{% load blog_tags %}
+<div class="center">
+    {% for post in posts %}
+        <div style="margin-left: 20px; display: inline">
+            <a class="button" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+            <span class="tag">{{ post.comments_count }}</span>
+        </div>
+    {% endfor %}
+</div>

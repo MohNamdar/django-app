@@ -1,0 +1,6 @@
+<div>
+    <p>آخرین پست ها</p>
+    {% for post in l_post %}
+        <a href="{% url 'blog:post_details' post.id %}" class="button">{{ post.title }}</a>
+    {% endfor %}
+</div>

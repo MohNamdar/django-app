@@ -1,0 +1,9 @@
+{% extends 'parent/base.html'%}
+
+{% block title %}✅ successful{% endblock %}
+{% block content %}
+    {% if form %}
+    <h1 class="center">✅ تیکت با موفقیت ارسال شد</h1>
+        <p class="center">با تشکر از شما {{ form.name.value }} عزیز</p>
+    {% endif %}
+{% endblock %}

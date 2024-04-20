@@ -1,0 +1,27 @@
+{% extends 'parent/base.html' %}
+
+{% block title %}new post{% endblock %}
+{% block content %}
+
+    <div class="center">
+        {% if request.method == 'POST' and form.is_valid %}
+            <p>با موفقیت ذخیره شد✅</p>
+            <a class="button" href="{% url 'blog:new_post' %}">افزودن جدید</a>
+
+        {% else %}
+            <form method="post">
+                {% csrf_token %}
+                <label for="users">نویسنده:</label>
+                <select name="user" id="users">
+                    {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+                {{ form.as_p }}
+                <input class="button" type="submit" value="اضافه کردن پست">
+            </form>
+        {% endif %}
+    </div>
+
+{% endblock %}
