@@ -1,0 +1,13 @@
+<div class="paginator-wrap">
+    {% if page.has_previous %}
+        <a href="?page={{ page.previous_page_number }}" class="paginator">قبل</a>
+    {% endif %}
+
+    <span class="current-paginator">{{ page.number }}</span>
+
+
+    {% if page.has_next %}
+        <a href="?page={{ page.next_page_number }}" class="paginator">بعد</a>
+    {% endif %}
+
+</div>

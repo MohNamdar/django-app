@@ -1,0 +1,49 @@
+{% extends 'parent/base.html' %}
+{% load blog_tags %}
+{% block title %}homepage{% endblock %}
+{% load jformat %}
+
+{% block content %}
+    <div class="center">
+        <p>تعداد پست ها: {% total_posts %} - تعداد کامنت ها: {% total_comments %}</p>
+        {% last_post_date as last_post %}
+        <p>تاریخ آخرین پست: {{ last_post | jformat:'%H:%M - %Y/%m/%d' }}</p>
+
+        <p>محبوب ترین پست ها </p>
+        {% most_popular_posts 4 %}
+        <br>
+
+        {% latest_post 3 %}
+        <br>
+
+        {% longest_reading_time as lg_post %}
+        <p>طولانی ترین پست ها</p>
+        {% for post in lg_post %}
+            <div style="margin-left: 20px; display: inline">
+                <a class="button" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                <span class="tag">{{ post.reading_time }}</span>
+            </div>
+        {% endfor %}
+        <br>
+
+        {% shortest_reading_time as st_post %}
+        <p>کوتاه ترین پست ها</p>
+        {% for post in st_post %}
+            <div style="margin-left: 20px; display: inline">
+                <a class="button" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                <span class="tag">{{ post.reading_time }}</span>
+            </div>
+        {% endfor %}
+        <br> <br>
+
+        {% most_active_user as active_user %}
+        <span>فعال ترین کاربر (بیشترین پست): <a class="button"
+                                                href="{% url "blog:show_user" active_user.id %}">{{ active_user }}</a></span>
+        <span class="tag">{{ active_user.post_count }}</span>
+        <br> <br>
+
+        <a class="button" href="{% url 'blog:posts_list' %}">تمام پست ها</a>
+        <a class="button" href="{% url 'blog:new_post' %}">افزودن پست جدید</a>
+
+    </div>
+{% endblock %}

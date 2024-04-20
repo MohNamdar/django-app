@@ -1,0 +1,17 @@
+{% extends "parent/base.html" %}
+{% block title %}Posts list{% endblock %}
+
+{% block content %}
+    <h1 class="center">تمام پست ها</h1>
+    <div class="main-wrap">
+        {% for post in posts %}
+            <div class="post-card">
+                <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
+                <p>{{ post.description | truncatewords:5 }}<p/>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% include 'parent/paginator.html' with page=page_obj %}
+
+{% endblock %}

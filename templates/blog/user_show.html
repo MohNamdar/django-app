@@ -1,0 +1,12 @@
+{% extends 'parent/base.html' %}
+{% load blog_tags %}
+{% block title %}user » {{ user.username }}{% endblock %}
+{% block content %}
+    <div class="center">
+        <p>نام کاربری: {{ user.username }}</p>
+        <p>آیدی: {{ user.id }}</p>
+        <p>تاریخ ورود: {{ user.date_joined | date:"H:i - Y/m/d"}}</p>
+    <p>تعداد پست ها: {% post_own_count user.id %}</p>
+    </div>
+
+{% endblock %}

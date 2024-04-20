@@ -1,0 +1,49 @@
+{% extends 'parent/base.html' %}
+{% load jformat %}
+{% load blog_tags %}
+{% block title %}posts | {{ post.title }}{% endblock %}
+{% block content %}
+    <div class="post-details">
+        <h1>{{ post.title }}</h1><span> توسط {{ post.author }}</span>
+        <p>زمان مطالعه: {{ post.reading_time }} دقیقه</p>
+        <p>{{ post.description | censor | markdown }}</p>
+        <p>{{ post.publish | jformat:'%H:%M - %Y/%m/%d' }}</p>
+
+        {% with comments.count as cm_count %}
+            {{ cm_count }} تا کامنت
+        {% endwith %}
+
+        {% for comment in comments %}
+            <div class="comment">
+                <p>{{ comment.name }}</p>
+                <p>{{ comment.body | linebreaks }}</p>
+            </div>
+        {% empty %}
+            <p>هنوز کامنتی برای این پست ثبت نشده</p>
+        {% endfor %}
+
+        <div id="new-comment">
+            {% if comment %}
+                <h3>✅کامنت شما ثبت شد</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input class="button" type="submit" value="ثبت کامنت">
+                </form>
+
+                <a class="button" href="{% url 'blog:posts_list' %}">سایر پست ها</a>
+            {% else %}
+                {% if request.method == 'POST' %}
+                    <h3>🚫کامنت شما ثبت نشد</h3>
+                {% else %}
+                    <h3>✨کامنت جدید اضافه کنید</h3>
+                {% endif %}
+                <form method="post" class="center">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input class="button" type="submit" value="ثبت کامنت">
+                </form>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

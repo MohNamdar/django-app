@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>blog » {% block title %} {% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+    {% block head %} {% endblock %}
+</head>
+<body>
+{#{% include 'partials/header.html' %}#}
+
+{% block content %} {% endblock %}
+
+{% if request.path != '/blog/ticket' %}
+    <a class="fix-button" href="{% url "blog:ticket" %}">تیکت پشتیبانی</a>
+{% endif %}
+
+{% if request.path != '/blog/' %}
+    <a class="button back" href="{% url "blog:blog_home" %}">رفتن به خانه</a>
+{% endif %}
+
+{#{% include 'partials/footer.html' %}#}
+
+
+</body>
+</html>
