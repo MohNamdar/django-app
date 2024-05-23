@@ -29,9 +29,9 @@ class Post(models.Model):
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT, verbose_name='وضعیت')
     slug = models.SlugField(max_length=250)
 
-    publish = models.DateTimeField(default=timezone.now, verbose_name='انتشار')
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    publish = jmodels.jDateTimeField(default=timezone.now, verbose_name='انتشار')
+    created = jmodels.jDateTimeField(auto_now_add=True)
+    updated = jmodels.jDateTimeField(auto_now=True)
 
     reading_time = models.PositiveIntegerField(verbose_name='زمان مطالعه')
 
@@ -74,8 +74,8 @@ class Comment(models.Model):
     name = models.CharField(max_length=250, verbose_name='نام')
     body = models.TextField(verbose_name='متن کامنت')
     email = models.EmailField(verbose_name='ایمیل', default='mail@email.com')
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    created = jmodels.jDateTimeField(auto_now_add=True)
+    updated = jmodels.jDateTimeField(auto_now=True)
     active = models.BooleanField(default=False)
 
     class Meta:

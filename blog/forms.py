@@ -76,3 +76,7 @@ class NewPostForm(forms.ModelForm):
                 raise forms.ValidationError("نوشته (توضیحات) پست نمیتواند کمتر از 50 کاراکتر باشد")
             else:
                 return description
+
+
+class SearchForm(forms.Form):
+    query = forms.CharField()

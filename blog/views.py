@@ -1,11 +1,12 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from .models import *
 from .forms import *
 from django.views.generic import ListView, DetailView
-from random import choice
 from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 from django.utils.text import slugify
+# from django.db.models import Q
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 
 # Create your views here.
@@ -86,7 +87,7 @@ def new_post(request):
             post.author = User.objects.get(id=request.POST['user'])
             post.slug = slugify(post.title, allow_unicode=True)
             des_word = len(post.description.split())
-            post.reading_time = des_word // 230
+            post.reading_time = (des_word // 230) or 1
             post.save()
     context = {
         'form': form,
@@ -101,3 +102,25 @@ def show_user(request, id):
         'user': user
     }
     return render(request, 'blog/user_show.html', context)
+
+
+def post_search(request):
+    query = None
+    result = []
+    if 'query' in request.GET:
+        form = SearchForm(data=request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            search_query = SearchQuery(query)
+            # result = Post.published.filter(Q(title__contains=query) | Q(description__contains=query))
+            # result = Post.published.filter(Q(title__search=query) | Q(description__search=query))
+            search_vector = SearchVector('title', weight="B") + SearchVector('description', weight="A")
+
+            result = Post.published.annotate(search=search_vector, rank=SearchRank(search_vector, search_query)) \
+                .filter(rank__gte=0.3).order_by('-rank')
+
+    context = {
+        'result': result,
+        'query': query
+    }
+    return render(request, 'blog/search.html', context)
