@@ -78,3 +78,11 @@ def post_own_count(user_id):
     return post_count
 
 
+@register.simple_tag()
+def status_name(stat):
+    if stat == 'DR':
+        return 'منتشر نشده'
+    elif stat == 'PD':
+        return 'منتشر شده'
+    elif stat == 'RJ':
+        return 'رد شده'

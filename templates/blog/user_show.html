@@ -5,8 +5,40 @@
     <div class="center">
         <p>نام کاربری: {{ user.username }}</p>
         <p>آیدی: {{ user.id }}</p>
-        <p>تاریخ ورود: {{ user.date_joined | date:"H:i - Y/m/d"}}</p>
-    <p>تعداد پست ها: {% post_own_count user.id %}</p>
+        <p>تاریخ ورود: {{ user.date_joined | date:"H:i - Y/m/d" }}</p>
+        <p>تعداد پست ها: {% post_own_count user.id %}</p>
+        {% if user.id == request.user.id %}
+            <a href="{% url "blog:new_post" %}" class="button">ایجاد پست جدید</a>
+            <br> <br>
+        {% endif %}
+    </div>
+
+    <div style="display: flex; justify-content: center">
+        <table width="70%" style="border: 1px solid black; border-radius: 20px; padding: 20px;">
+            <tr class="center">
+                <th>ردیف</th>
+                <th>مشاهده</th>
+                {% if user.id == request.user.id %}
+                    <th>ویرایش</th>
+                    <th>حذف</th>
+                    <th>وضعیت</th>
+                {% endif %}
+            </tr>
+            {% for post in posts %}
+                {% if post.status == 'PD' or user.id == request.user.id %}
+                    <tr class="center">
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="{% url "blog:post_details" post.id %}">{{ post.title }}</a></td>
+                    {% if user.id == request.user.id %}
+                        <td><a href="#">✏️</a></td>
+                        <td><a href="#">🗑️</a></td>
+                        <td>{% status_name post.status %}</td>
+                    {% endif %}
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+
     </div>
 
 {% endblock %}

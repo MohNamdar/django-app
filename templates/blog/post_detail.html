@@ -4,8 +4,14 @@
 {% block title %}posts | {{ post.title }}{% endblock %}
 {% block content %}
     <div class="post-details">
-        <h1>{{ post.title }}</h1><span> توسط {{ post.author }}</span>
+        <h1>{{ post.title }}</h1><a href="{% url "blog:show_user" post.author.id %}"> توسط {{ post.author }}</a>
         <p>زمان مطالعه: {{ post.reading_time }} دقیقه</p>
+
+        {% for image in post.images.all %}
+            <img src="{{ image.image_file.url }}" style="width: 95%; border-radius: 25px; margin-bottom: 20px;">
+        {% endfor %}
+
+
         <p>{{ post.description | censor | markdown }}</p>
         <p>{{ post.publish | jformat:'%H:%M - %Y/%m/%d' }}</p>
 

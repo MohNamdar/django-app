@@ -3,6 +3,19 @@ from .models import *
 from django_jalali.admin.filters import JDateFieldListFilter
 
 
+# Inlines
+class ImageInline(admin.TabularInline):
+    model = Image
+    extra = 0
+    # fields = ['title']
+
+
+class CommentInline(admin.TabularInline):
+    model = Comment
+    extra = 0
+    fields = ['name', 'body']
+
+
 # Register your models here.
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
@@ -13,6 +26,7 @@ class PostAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ['title']}
     raw_id_fields = ['author']
     date_hierarchy = 'publish'
+    inlines = [ImageInline, CommentInline]
 
 
 @admin.register(Ticket)
@@ -27,3 +41,8 @@ class CommentAdmin(admin.ModelAdmin):
     list_filter = ['name', 'post', ('created', JDateFieldListFilter)]
     search_fields = ['post', 'body']
     raw_id_fields = ['post']
+
+
+@admin.register(Image)
+class ImageAdmin(admin.ModelAdmin):
+    list_display = ['post', 'title']

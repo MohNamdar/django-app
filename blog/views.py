@@ -6,7 +6,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 # from django.db.models import Q
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.contrib.postgres.search import TrigramSimilarity
 
 
 # Create your views here.
@@ -79,16 +79,22 @@ def post_comment(request, pk):
 
 
 def new_post(request):
-    form = NewPostForm()
     if request.method == "POST":
-        form = NewPostForm(data=request.POST)
+        form = NewPostForm(data=request.POST, files=request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
-            post.author = User.objects.get(id=request.POST['user'])
-            post.slug = slugify(post.title, allow_unicode=True)
-            des_word = len(post.description.split())
-            post.reading_time = (des_word // 230) or 1
-            post.save()
+            post.author = request.user
+            post.save()  # Save the post to generate a primary key before adding images
+
+            if form.cleaned_data['image1']:
+                Image.objects.create(image_file=form.cleaned_data['image1'], post=post)
+            if form.cleaned_data['image2']:
+                Image.objects.create(image_file=form.cleaned_data['image2'], post=post)
+
+            return redirect("blog:show_user", post.author.id)
+    else:
+        form = NewPostForm()
+
     context = {
         'form': form,
         'users': User.objects.all(),
@@ -98,8 +104,10 @@ def new_post(request):
 
 def show_user(request, id):
     user = User.objects.get(id=id)
+    posts = Post.objects.filter(author=user)
     context = {
-        'user': user
+        'user': user,
+        'posts': posts
     }
     return render(request, 'blog/user_show.html', context)
 
@@ -111,16 +119,32 @@ def post_search(request):
         form = SearchForm(data=request.GET)
         if form.is_valid():
             query = form.cleaned_data['query']
-            search_query = SearchQuery(query)
-            # result = Post.published.filter(Q(title__contains=query) | Q(description__contains=query))
-            # result = Post.published.filter(Q(title__search=query) | Q(description__search=query))
-            search_vector = SearchVector('title', weight="B") + SearchVector('description', weight="A")
 
-            result = Post.published.annotate(search=search_vector, rank=SearchRank(search_vector, search_query)) \
-                .filter(rank__gte=0.3).order_by('-rank')
+            result_p1 = Post.published.annotate(similarity=TrigramSimilarity('title', query)) \
+                .filter(similarity__gt=0.1)
+            result_p2 = Post.published.annotate(similarity=TrigramSimilarity('description', query)) \
+                .filter(similarity__gt=0.1)
+
+            # result_i1 = Image.objects.all.annotate(similarity=TrigramSimilarity('title', query)) \
+            #     .filter(similarity__gt=0.1)
+            # result_i2 = Image.objects.all.annotate(similarity=TrigramSimilarity('description', query)) \
+            #     .filter(similarity__gt=0.1)
+
+            result = (result_p1 | result_p2).order_by('-similarity')
 
     context = {
         'result': result,
         'query': query
     }
     return render(request, 'blog/search.html', context)
+
+
+def show_profile(request):
+    user = request.user
+    posts = Post.objects.filter(author=user)
+    context = {
+        'user': user,
+        'posts': posts
+    }
+    return render(request, 'blog/user_show.html', context)
+

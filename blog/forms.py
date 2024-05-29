@@ -55,27 +55,12 @@ class CommentForm(forms.ModelForm):
 
 
 class NewPostForm(forms.ModelForm):
+    image1 = forms.ImageField(label='تصویر یک')
+    image2 = forms.ImageField(label='تصویر دو')
+
     class Meta:
         model = Post
         fields = ['title', 'description']
-
-    def clean_title(self):
-        title = self.cleaned_data["title"]
-
-        if title:
-            if len(title) < 10:
-                raise forms.ValidationError("موضوع نمیتواند کمتر از 10 کاراکتر باشد")
-            else:
-                return title
-
-    def clean_description(self):
-        description = self.cleaned_data["description"]
-
-        if description:
-            if len(description) < 50:
-                raise forms.ValidationError("نوشته (توضیحات) پست نمیتواند کمتر از 50 کاراکتر باشد")
-            else:
-                return description
 
 
 class SearchForm(forms.Form):

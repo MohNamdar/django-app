@@ -6,6 +6,9 @@
     <div class="main-wrap">
         {% for post in posts %}
             <div class="post-card">
+                {% if post.images %}
+                    <img src="{{ post.images.first.image_file.url }}" style="width: 60%; border-radius: 8px;">
+                {% endif %}
                 <h3><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
                 <p>{{ post.description | truncatewords:5 }}<p/>
             </div>

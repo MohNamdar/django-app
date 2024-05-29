@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django_jalali.db import models as jmodels
 from django.urls import reverse
+from datetime import datetime
+from django.template.defaultfilters import slugify
 
 
 # custom manager
@@ -46,6 +48,14 @@ class Post(models.Model):
         ]
         verbose_name = 'پست'
         verbose_name_plural = 'پست ها'
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        if not self.reading_time:
+            des_word = len(self.description.split())
+            self.reading_time = (des_word // 230) or 1
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -92,3 +102,23 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.name} #{self.post}"
+
+
+class Image(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images', verbose_name='پست')
+    image_file = models.ImageField(upload_to=f"{datetime.now().year}/{datetime.now().month}")
+    title = models.CharField(max_length=250, verbose_name='عنوان', null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    created = jmodels.jDateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created']
+        indexes = [
+            models.Index(fields=['-created'])
+        ]
+
+        verbose_name = 'تصویر'
+        verbose_name_plural = 'تصاویر'
+
+    def __str__(self):
+        return self.title if self.title else self.image_file.name.split('/')[-1]

@@ -11,5 +11,6 @@ urlpatterns = [
     path('ticket', views.ticket, name='ticket'),
     path('new-post', views.new_post, name='new_post'),
     path('users/<id>', views.show_user, name='show_user'),
-    path('search', views.post_search, name='post_search')
+    path('search/', views.post_search, name='post_search'),
+    path('profile/', views.show_profile, name='show_profile'),
 ]
